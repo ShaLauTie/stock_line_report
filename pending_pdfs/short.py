@@ -1,32 +1,26 @@
 #!/usr/bin/env python3
 
 from pathlib import Path
-import os
 
-ROOT_DIR = "."  # 要掃描的目錄
+MAX_LEN = 35
 
-for root, dirs, files in os.walk(ROOT_DIR):
-    for filename in files:
-        old_path = Path(root) / filename
+for p in Path(".").glob("*.pdf"):
 
-        stem = old_path.stem      # 不含副檔名
-        suffix = old_path.suffix  # .txt .rpm .ipk ...
+    if len(p.name) <= MAX_LEN:
+        continue
 
-        if len(filename) > 50:
-            new_name = stem[-25:] + suffix
-            new_path = old_path.with_name(new_name)
+    if "_" not in p.name:
+        continue
 
-            # 避免檔名衝突
-            counter = 1
-            while new_path.exists():
-                new_name = f"{stem[-50:]}_{counter}{suffix}"
-                new_path = old_path.with_name(new_name)
-                counter += 1
+    prefix = p.stem.split("_")[0]
+    new_name = prefix + p.suffix
 
-            print(f"Rename:")
-            print(f"  OLD: {old_path}")
-            print(f"  NEW: {new_path}")
+    new_path = p.with_name(new_name)
 
-            #old_path.rename(new_path)
+    print(f"{p.name}")
+    print(f" -> {new_name}")
 
-print("Done.")
+    p.rename(new_path)
+
+print("Done")
+
